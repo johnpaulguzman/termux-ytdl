@@ -1,0 +1,24 @@
+#!/bin/bash
+set -x
+url=${1:-$(termux-clipboard-get)}
+vibrate_duration_ms=2000
+
+python ~/bin/ytdl.py "${url}"
+RESULT=$?
+if [ ${RESULT} == 0 ]; then
+    echo "SUCCESS"
+else
+    echo "FAILURE"
+    echo "Retrying with updated version of youtube-dl"
+    pip install --upgrade youtube-dl
+    python ~/bin/ytdl.py "${url}"
+    RETRY_RESULT=$?
+    if [ ${RETRY_RESULT} == 0 ]; then
+        echo "SUCCESS"
+    else
+        termux-vibrate -d ${vibrate_duration_ms} -f
+        echo "FAILURE"
+        echo "Check the logs for errors. Press enter to continue..." && read
+    fi
+fi
+termux-vibrate -d ${vibrate_duration_ms} -f

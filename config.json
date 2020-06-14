@@ -1,0 +1,11 @@
+{
+    "continuedl": true,
+    "ignoreerrors": true,
+    "nocheckcertificate": true,
+    "subtitleslangs": [
+        "en"
+    ],
+    "verbose": true,
+    "writeautomaticsub": true,
+    "writesubtitles": true
+}
