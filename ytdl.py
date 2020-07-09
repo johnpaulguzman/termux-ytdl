@@ -2,6 +2,7 @@ from youtube_dl import YoutubeDL
 
 import json
 import os
+import re
 import sys
 import traceback
 
@@ -45,13 +46,21 @@ def generate_config(metaconfig):
     print(f"Loaded config: {json.dumps(config, **json_kwargs)}")
     return config
 
+def fix_link(link):
+    re_yt_wl = ".*\.youtube\.com/watch\?.*&list=.*"
+    fmt_yt_wl = lambda s: re.sub("list=.*", "", s)
+    if re.match(re_yt_wl, link):
+        return fmt_yt_wl(link)
+    return link
+
 if __name__ == '__main__':
     try:
         metaconfig = load_json(metaconfig_path, verbose=True)
         update_metaconfig(metaconfig)
         config = generate_config(metaconfig)
         with YoutubeDL(config) as ytdl:
-            ytdl.download(urls)
+            fixed_links = list(map(fix_link, urls))
+            ytdl.download(fixed_links)
     except Exception as e:
         print(f"Exception: {e}")
         traceback.print_exc()
